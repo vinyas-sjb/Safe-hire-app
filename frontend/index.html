@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SafeHire</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --brand:#1a472a;--brand2:#2d6a4f;--brand3:#40916c;--brand-light:#d8f3dc;
+    --accent:#e76f51;--accent2:#f4a261;
+    --bg:#f8faf8;--card:#ffffff;--border:#d1e8d5;
+    --text:#1a2e1a;--text2:#4a6741;--text3:#7a9a75;
+    --red:#e63946;--amber:#f4a261;--green:#40916c;
+    --shadow:0 2px 12px rgba(26,71,42,0.1);
+    --r:12px;--r2:8px;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  h1,h2,h3,h4{font-family:'Sora',sans-serif}
+
+  /* NAV */
+  .nav{background:var(--brand);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .nav-logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;cursor:pointer}
+  .nav-logo span{color:var(--accent2)}
+  .nav-right{display:flex;gap:10px;align-items:center}
+  .btn{padding:9px 20px;border-radius:var(--r2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .2s}
+  .btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,0.5);color:#fff}
+  .btn-outline:hover{background:rgba(255,255,255,0.1)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{background:#d4603e}
+  .btn-brand{background:var(--brand);color:#fff}
+  .btn-brand:hover{background:var(--brand2)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+  .btn-ghost:hover{background:var(--brand-light)}
+  .btn-green{background:var(--green);color:#fff;border:none}
+  .btn-green:hover{background:var(--brand2)}
+  .btn-block{width:100%;padding:12px;font-size:15px}
+  .btn-sm{padding:6px 14px;font-size:13px}
+
+  /* PAGE WRAPPER */
+  .page{display:none;min-height:calc(100vh - 56px)}
+  .page.active{display:block}
+  .container{max-width:900px;margin:0 auto;padding:32px 24px}
+  .container-sm{max-width:520px;margin:0 auto;padding:32px 24px}
+
+  /* LANDING */
+  .hero{text-align:center;padding:64px 24px 40px}
+  .hero-badge{display:inline-block;background:var(--brand-light);color:var(--brand);font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:18px;letter-spacing:.5px;text-transform:uppercase}
+  .hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.15;color:var(--brand);margin-bottom:14px}
+  .hero h1 span{color:var(--accent)}
+  .hero p{font-size:17px;color:var(--text2);max-width:480px;margin:0 auto 36px;line-height:1.7}
+  .choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:600px;margin:0 auto}
+  .choice-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:36px 28px;cursor:pointer;transition:all .25s;text-align:center}
+  .choice-card:hover{border-color:var(--brand3);box-shadow:0 8px 28px rgba(26,71,42,0.12);transform:translateY(-2px)}
+  .choice-card .icon{font-size:40px;margin-bottom:14px}
+  .choice-card h3{font-size:20px;font-weight:600;margin-bottom:8px;color:var(--brand)}
+  .choice-card p{font-size:14px;color:var(--text2);line-height:1.6}
+  .choice-card.selected{border-color:var(--brand);background:var(--brand-light)}
+
+  /* AUTH PAGES */
+  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:36px;box-shadow:var(--shadow)}
+  .auth-top{background:var(--brand);border-radius:12px;padding:18px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}
+  .auth-top-text{color:#fff}
+  .auth-top-text h2{font-size:18px;font-weight:600}
+  .auth-top-text p{font-size:13px;opacity:.75;margin-top:3px}
+  .auth-member{background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;color:#fff;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid rgba(255,255,255,0.3)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r2);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;outline:none;transition:border .2s}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand3)}
+  .field textarea{min-height:80px;resize:vertical}
+  .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a6741' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+  .upload-box{border:2px dashed var(--border);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s}
+  .upload-box:hover{border-color:var(--brand3);background:var(--brand-light)}
+  .upload-box p{font-size:13px;color:var(--text3);margin-top:6px}
+  .upload-icon{font-size:24px}
+  .digilocker-btn{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#003366,#0052cc);color:#fff;border:none;border-radius:var(--r2);padding:11px 18px;cursor:pointer;font-size:14px;font-weight:500;width:100%}
+  .step-indicator{display:flex;gap:6px;margin-bottom:24px}
+  .step-dot{height:4px;border-radius:2px;flex:1;background:var(--border);transition:background .3s}
+  .step-dot.active{background:var(--brand)}
+  .section-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+  .tag{display:inline-block;background:var(--brand-light);color:var(--brand);font-size:12px;padding:3px 10px;border-radius:20px;margin:3px}
+
+  /* DASHBOARD LAYOUT */
+  .dash-layout{display:flex;min-height:calc(100vh - 56px)}
+  .sidebar{width:260px;background:var(--brand);color:#fff;flex-shrink:0;position:relative}
+  .sidebar-inner{padding:20px 0;position:sticky;top:56px}
+  .sidebar-profile{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;gap:12px}
+  .avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;object-fit:cover}
+  .avatar-lg{width:72px;height:72px;font-size:26px}
+  .sidebar-name{font-weight:600;font-size:15px}
+  .sidebar-role{font-size:12px;opacity:.65;margin-top:2px}
+  .sidebar-menu{padding:12px 0}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:12px 20px;cursor:pointer;font-size:14px;transition:all .2s;border-left:3px solid transparent}
+  .menu-item:hover{background:rgba(255,255,255,0.1)}
+  .menu-item.active{background:rgba(255,255,255,0.15);border-left-color:var(--accent2)}
+  .menu-item .mi-icon{font-size:18px;width:22px;text-align:center}
+  .menu-item .mi-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;padding:2px 7px;border-radius:10px}
+  .dash-content{flex:1;padding:28px;overflow-y:auto}
+  .dash-header{margin-bottom:24px}
+  .dash-header h2{font-size:22px;font-weight:600;color:var(--brand)}
+  .dash-header p{font-size:14px;color:var(--text2);margin-top:4px}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .card h4{font-size:15px;font-weight:600;color:var(--text)}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .info-item label{font-size:12px;color:var(--text3);display:block;margin-bottom:3px}
+  .info-item p{font-size:14px;color:var(--text);font-weight:500}
+  .status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+  .status-pending{background:#fff3cd;color:#856404}
+  .status-completed{background:#d1e7dd;color:#0a3622}
+  .status-approved{background:#d1e7dd;color:#0a3622}
+  .status-upcoming{background:#cfe2ff;color:#084298}
+  .worker-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;cursor:pointer;transition:all .2s;margin-bottom:12px}
+  .worker-card:hover{border-color:var(--brand3);box-shadow:var(--shadow)}
+  .worker-info{flex:1}
+  .worker-name{font-size:16px;font-weight:600;color:var(--text)}
+  .worker-type{font-size:13px;color:var(--text2);margin-top:2px}
+  .worker-bio{font-size:13px;color:var(--text3);margin-top:6px;line-height:1.5}
+  .worker-meta{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+  .worker-meta span{font-size:12px;color:var(--text2)}
+  .badge{display:inline-flex;align-items:center;gap:4px;background:var(--brand-light);color:var(--brand);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+  .badge-gold{background:#fff3cd;color:#664d03}
+  .badge-silver{background:#e2e3e5;color:#41464b}
+  .stars{color:#f4a261;font-size:14px;letter-spacing:1px}
+  .qr-box{background:var(--brand);color:#fff;border-radius:var(--r2);padding:14px;text-align:center;margin:12px 0}
+  .qr-code{width:80px;height:80px;background:#fff;border-radius:6px;margin:10px auto;display:flex;align-items:center;justify-content:center}
+  .payment-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+  .payment-row:last-child{border-bottom:none}
+  .amount-positive{color:var(--green);font-weight:600}
+  .tabs{display:flex;gap:4px;background:var(--brand-light);border-radius:var(--r2);padding:4px;margin-bottom:20px}
+  .tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .2s}
+  .tab.active{background:var(--brand);color:#fff}
+  .alert-info{background:#e8f4f8;border:1px solid #b8dce8;border-radius:var(--r2);padding:12px 16px;font-size:14px;color:#1a5276;margin-bottom:16px}
+  .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px}
+  .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px}
+
+  /* PROFILE PAGE */
+  .profile-top{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px}
+  .profile-details{flex:1}
+  .profile-badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+  /* LOGIN */
+  .login-wrap{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:24px}
+
+  /* WORKER TYPE GRID */
+  .wtype-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
+  .wtype-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s}
+  .wtype-card:hover,.wtype-card.selected{border-color:var(--brand);background:var(--brand-light)}
+  .wtype-card .wt-icon{font-size:32px;margin-bottom:8px}
+  .wtype-card p{font-size:13px;font-weight:500;color:var(--text)}
+
+  /* WORK DETAIL */
+  .work-detail-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+  .work-detail-row:last-child{border-bottom:none}
+  .work-detail-label{font-size:13px;color:var(--text3);width:120px;flex-shrink:0}
+  .work-detail-val{font-size:14px;color:var(--text);font-weight:500}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--brand);color:#fff;padding:12px 20px;border-radius:var(--r2);font-size:14px;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  @media(max-width:700px){
+    .form-row{grid-template-columns:1fr}
+    .sidebar{display:none;position:fixed;top:56px;left:0;height:calc(100vh - 56px);z-index:99}
+    .sidebar.open{display:block}
+    .hamburger{display:flex}
+    .choice-cards{grid-template-columns:1fr}
+    .info-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" onclick="goTo('landing')">Safe<span>Hire</span></div>
+  <div class="nav-right">
+    <div class="hamburger" id="hamBtn" onclick="toggleSidebar()" style="display:none">
+      <span></span><span></span><span></span>
+    </div>
+    <button class="btn btn-outline" id="nav-login-btn" onclick="goTo('login')">Login</button>
+    <div id="nav-logout" style="display:none">
+      <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ============ LANDING PAGE ============ -->
+<div class="page active" id="page-landing">
+  <div class="hero">
+    <div class="hero-badge">India's Trusted Hiring Platform</div>
+    <h1>Connecting <span>Skilled Workers</span><br>with Opportunities</h1>
+    <p>SafeHire verifies every worker with Aadhaar & DigiLocker. Post work, get hired, build trust — all in one place.</p>
+    <div class="choice-cards">
+      <div class="choice-card" onclick="goRegister('hirer')">
+        <div class="icon">🏗️</div>
+        <h3>I'm Hiring</h3>
+        <p>Find verified plumbers, electricians, tutors, carpenters & more for your needs.</p>
+      </div>
+      <div class="choice-card" onclick="goRegister('worker')">
+        <div class="icon">🔧</div>
+        <h3>I'm Looking for Work</h3>
+        <p>Showcase your skills, get hired, earn badges, and grow your reputation.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORKER REGISTER ============ -->
+<div class="page" id="page-worker-register">
+  <div class="container-sm">
+    <div class="auth-card">
+      <div class="auth-top">
+        <div class="auth-top-text">
+          <h2>Worker Registration</h2>
+          <p>Join SafeHire — get hired for your skills</p>
+        </div>
+        <span class="auth-member" onclick="goTo('login')">Already a member? Login</span>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot active" id="ws1"></div>
+        <div class="step-dot" id="ws2"></div>
+        <div class="step-dot" id="ws3"></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="wstep1">
+        <div class="form-row">
+          <div class="field"><label>Username *</label><input type="text" placeholder="e.g. ravi_plumber" /></div>
+          <div class="field"><label>Full Name *</label><input type="text" placeholder="Ravi Kumar" /></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Mobile Number *</label><input type="tel" placeholder="+91 98765 43210" /></div>
+          <div class="field"><label>Aadhaar Card Number *</label><input type="text" placeholder="XXXX XXXX XXXX" maxlength="14" /></div>
+        </div>
+        <div class="field">
+          <label>Verify via DigiLocker</label>
+          <button class="digilocker-btn"><span>🔐</span> Verify with DigiLocker</button>
+          <p style="font-size:12px;color:var(--text3);margin-top:6px">Securely verify your identity using government-issued documents</p>
+        </div>
+        <div class="field">
+          <label>Password *</label>
+          <input type="password" placeholder="Create a strong password" />
+        </div>
+        <button class="btn btn-green btn-block" onclick="wNext(2)">Continue →</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="wstep2" style="display:none">
+        <div class="form-row">
+          <div class="field">
+            <label>Type of Work *</label>
+            <select>
+              <option value="">Select work type</option>
+              <option>Electrician</option><option>Plumber</option><option>Carpenter</option>
+              <option>Tutor</option><option>Painter</option><option>Mason</option>
+              <option>Driver</option><option>Cook</option><option>Gardener</option>
+              <option>Welder</option><option>AC Technician</option><option>Security Guard</option>
+            </select>
+          </div>
+          <div class="field"><label>Years of Experience</label><input type="number" placeholder="5" /></div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Work Preference *</label>
+            <select>
+              <option>Full Time</option><option>Part Time</option><option>Both</option>
+            </select>
+          </div>
+          <div class="field"><label>Hours Available per Day</label><input type="number" placeholder="8" /></div>
+        </div>
+        <div class="field"><label>Expected Daily Wage (₹) *</label><input type="number" placeholder="600" /></div>
+        <div class="field">
+          <label>Your Bio / Skills Description *</label>
+          <textarea placeholder="Describe your skills, experience and what makes you a great hire..."></textarea>
+        </div>
+        <div class="form-row">
+          <div>
+            <button class="btn btn-ghost btn-block" onclick="wNext(1)">← Back</button>
+          </div>
+          <div>
+            <button class="btn btn-green btn-block" onclick="wNext(3)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="wstep3" style="display:none">
+        <div class="form-row">
+          <div class="field">
+            <label>Profile Photo *</label>
+            <div class="upload-box" onclick="showToast('Upload functionality active')">
+              <div class="upload-icon">📷</div>
+              <p>Click to upload your photo</p>
+            </div>
+          </div>
+          <div class="field">
+            <label>Signature Photo *</label>
+            <div class="upload-box" onclick="showToast('Upload functionality active')">
+              <div class="upload-icon">✍️</div>
+              <p>Click to upload signature</p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Work Experience Photos</label>
+          <div class="upload-box" onclick="showToast('Upload functionality active')">
+            <div class="upload-icon">🖼️</div>
+            <p>Upload photos showing your previous work (max 5 photos)</p>
+          </div>
+        </div>
+        <div class="field">
+          <label>Full Address *</label>
+          <textarea placeholder="House No, Street, Area, City, State, PIN code"></textarea>
+        </div>
+        <div class="form-row">
+          <div><button class="btn btn-ghost btn-block" onclick="wNext(2)">← Back</button></div>
+          <div><button class="btn btn-green btn-block" onclick="completeReg()">Complete Registration ✓</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HIRER REGISTER ============ -->
+<div class="page" id="page-hirer-register">
+  <div class="container-sm">
+    <div class="auth-card">
+      <div class="auth-top">
+        <div class="auth-top-text">
+          <h2>Hirer Registration</h2>
+          <p>Post work & hire verified workers</p>
+        </div>
+        <span class="auth-member" onclick="goTo('login')">Already a member? Login</span>
+      </div>
+      <div class="field"><label>Username *</label><input type="text" placeholder="e.g. sharma_constructions" /></div>
+      <div class="field"><label>Password *</label><input type="password" placeholder="Create a strong password" /></div>
+      <div class="field"><label>Full Name / Company Name *</label><input type="text" placeholder="Sharma Constructions" /></div>
+      <div class="field"><label>Phone Number *</label><input type="tel" placeholder="+91 98765 43210" /></div>
+      <div class="field">
+        <label>Profile Photo</label>
+        <div class="upload-box" onclick="showToast('Upload functionality active')">
+          <div class="upload-icon">📷</div>
+          <p>Click to upload your photo or company logo</p>
+        </div>
+      </div>
+      <div class="field">
+        <label>Full Address *</label>
+        <textarea placeholder="House No, Street, Area, City, State, PIN code"></textarea>
+      </div>
+      <button class="btn btn-green btn-block" onclick="completeReg()">Register as Hirer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div class="page" id="page-login">
+  <div class="login-wrap">
+    <div class="auth-card" style="width:100%;max-width:420px">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--brand)">Safe<span style="color:var(--accent)">Hire</span></div>
+        <p style="font-size:14px;color:var(--text2);margin-top:6px">Sign in to your account</p>
+      </div>
+      <div class="tabs">
+        <div class="tab active" id="lt-worker" onclick="setLoginType('worker')">Worker</div>
+        <div class="tab" id="lt-hirer" onclick="setLoginType('hirer')">Hirer</div>
+      </div>
+      <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="Enter your username" /></div>
+      <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="Enter your password" /></div>
+      <button class="btn btn-green btn-block" onclick="doLogin()">Login →</button>
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="goTo('forgot');return false" style="font-size:13px;color:var(--brand3)">Forgot Password?</a>
+      </div>
+      <hr class="section-divider" />
+      <div style="text-align:center;font-size:13px;color:var(--text2)">
+        Don't have an account?
+        <a href="#" onclick="goRegister(currentLoginType);return false" style="color:var(--brand3)">Register here</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FORGOT PASSWORD ============ -->
+<div class="page" id="page-forgot">
+  <div class="login-wrap">
+    <div class="auth-card" style="width:100%;max-width:420px">
+      <h3 style="margin-bottom:6px;color:var(--brand)">Forgot Password</h3>
+      <p style="font-size:14px;color:var(--text2);margin-bottom:20px">Enter your registered mobile number to receive OTP</p>
+      <div class="field"><label>Mobile Number</label><input type="tel" placeholder="+91 98765 43210" /></div>
+      <button class="btn btn-green btn-block" onclick="showToast('OTP sent to your mobile!');setTimeout(()=>goTo('login'),1500)">Send OTP →</button>
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="goTo('login');return false" style="font-size:13px;color:var(--text3)">← Back to Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORKER DASHBOARD ============ -->
+<div class="page" id="page-worker-dash">
+  <div class="dash-layout">
+    <div class="sidebar" id="worker-sidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-profile">
+          <div class="avatar">RK</div>
+          <div>
+            <div class="sidebar-name">Ravi Kumar</div>
+            <div class="sidebar-role">Plumber · ⭐ 4.8</div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <div class="menu-item active" id="wm-profile" onclick="wMenu('profile')"><span class="mi-icon">👤</span> My Profile</div>
+          <div class="menu-item" id="wm-pending" onclick="wMenu('pending')"><span class="mi-icon">⏳</span> Pending Works <span class="mi-badge">2</span></div>
+          <div class="menu-item" id="wm-upcoming" onclick="wMenu('upcoming')"><span class="mi-icon">📅</span> Upcoming</div>
+          <div class="menu-item" id="wm-completed" onclick="wMenu('completed')"><span class="mi-icon">✅</span> Completed</div>
+          <div class="menu-item" id="wm-payment" onclick="wMenu('payment')"><span class="mi-icon">💰</span> Payments</div>
+          <div class="menu-item" id="wm-reviews" onclick="wMenu('reviews')"><span class="mi-icon">⭐</span> My Reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-content" id="worker-main">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ HIRER DASHBOARD ============ -->
+<div class="page" id="page-hirer-dash">
+  <div class="dash-layout">
+    <div class="sidebar" id="hirer-sidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-profile">
+          <div class="avatar">SC</div>
+          <div>
+            <div class="sidebar-name">Sharma Constructions</div>
+            <div class="sidebar-role">Hirer</div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <div class="menu-item active" id="hm-profile" onclick="hMenu('profile')"><span class="mi-icon">👤</span> My Profile</div>
+          <div class="menu-item" id="hm-workers" onclick="hMenu('workers')"><span class="mi-icon">🔍</span> Find Workers</div>
+          <div class="menu-item" id="hm-hired" onclick="hMenu('hired')"><span class="mi-icon">📋</span> My Hirings</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-content" id="hirer-main">
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORKER DETAIL (for hirers) ============ -->
+<div class="page" id="page-worker-detail">
+  <div class="container">
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:20px" onclick="hMenu('workers')">← Back to Workers</button>
+    <div class="card">
+      <div class="profile-top">
+        <div class="avatar avatar-lg">RK</div>
+        <div class="profile-details">
+          <h2 style="color:var(--brand)">Ravi Kumar</h2>
+          <p style="color:var(--text2);font-size:14px">Plumber · Bengaluru</p>
+          <div class="stars">★★★★★</div>
+          <div class="profile-badge-row">
+            <span class="badge badge-gold">🥇 100+ Jobs</span>
+            <span class="badge">✅ Aadhaar Verified</span>
+            <span class="badge">⚡ Fast Responder</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:22px;font-weight:700;color:var(--green)">₹650/day</div>
+          <div style="font-size:12px;color:var(--text3)">Expected wage</div>
+        </div>
+      </div>
+      <hr class="section-divider" />
+      <div class="info-grid" style="margin-bottom:16px">
+        <div class="info-item"><label>Experience</label><p>8 years</p></div>
+        <div class="info-item"><label>Work Type</label><p>Full Time & Part Time</p></div>
+        <div class="info-item"><label>Hours/Day</label><p>Up to 10 hrs</p></div>
+        <div class="info-item"><label>Mobile</label><p>+91 98765 43210</p></div>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:var(--text3)">Bio</label>
+        <p style="font-size:14px;margin-top:4px;line-height:1.7">Experienced plumber with 8 years in residential and commercial projects. Specialise in leak repairs, pipe installations, bathroom fittings, and water tank maintenance. Always on time, clean work guaranteed.</p>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:var(--text3)">Available Dates</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <span class="tag">Today</span><span class="tag">Tomorrow</span><span class="tag">29 Apr</span><span class="tag">30 Apr</span><span class="tag">1 May</span>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="hireWorker()">Hire Ravi Kumar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORK DETAIL PAGE ============ -->
+<div class="page" id="page-work-detail">
+  <div class="container-sm">
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:20px" onclick="wMenu('upcoming')">← Back</button>
+    <div class="card">
+      <div class="card-header">
+        <h4>Work Assignment Details</h4>
+        <span class="status-badge status-upcoming">Upcoming</span>
+      </div>
+      <div class="work-detail-row"><span class="work-detail-label">Work Type</span><span class="work-detail-val">Pipe Repair & Fitting</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Date</span><span class="work-detail-val">30 April 2025</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Scheduled Time</span><span class="work-detail-val">9:00 AM – 5:00 PM</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Address</span><span class="work-detail-val">12, MG Road, Bengaluru – 560001</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Hirer Name</span><span class="work-detail-val">Sharma Constructions</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Hirer Mobile</span><span class="work-detail-val">+91 98765 00001</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Expected Wage</span><span class="work-detail-val" style="color:var(--green)">₹650</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Work Duration</span><span class="work-detail-val">Full Day</span></div>
+      <div class="work-detail-row"><span class="work-detail-label">Payment Status</span><span class="work-detail-val"><span class="status-badge status-approved">Approved</span></span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPage = 'landing';
+let currentLoginType = 'worker';
+let currentWorkerMenu = 'profile';
+let currentHirerMenu = 'profile';
+
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  currentPage = page;
+  const loggedIn = page === 'worker-dash' || page === 'hirer-dash' || page === 'worker-detail' || page === 'work-detail';
+  document.getElementById('nav-login-btn').style.display = loggedIn ? 'none' : '';
+  document.getElementById('nav-logout').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('hamBtn').style.display = (page === 'worker-dash' || page === 'hirer-dash') ? 'flex' : 'none';
+  window.scrollTo(0,0);
+}
+
+function goRegister(type) {
+  currentLoginType = type;
+  goTo(type === 'worker' ? 'worker-register' : 'hirer-register');
+}
+
+function setLoginType(t) {
+  currentLoginType = t;
+  document.getElementById('lt-worker').classList.toggle('active', t === 'worker');
+  document.getElementById('lt-hirer').classList.toggle('active', t === 'hirer');
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value;
+  if (!u) { showToast('Please enter username'); return; }
+  showToast('Welcome back, ' + u + '!');
+  setTimeout(() => {
+    if (currentLoginType === 'worker') { goTo('worker-dash'); wMenu('profile'); }
+    else { goTo('hirer-dash'); hMenu('profile'); }
+  }, 800);
+}
+
+function logout() {
+  goTo('landing');
+  showToast('Logged out successfully');
+}
+
+function completeReg() {
+  showToast('Registration successful! Please login.');
+  setTimeout(() => goTo('login'), 1000);
+}
+
+function wNext(step) {
+  [1,2,3].forEach(s => {
+    document.getElementById('wstep'+s).style.display = s === step ? 'block' : 'none';
+    document.getElementById('ws'+s).classList.toggle('active', s <= step);
+  });
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('worker-sidebar') || document.getElementById('hirer-sidebar');
+  if(s) s.classList.toggle('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== WORKER MENUS =====
+function wMenu(section) {
+  currentWorkerMenu = section;
+  document.querySelectorAll('[id^="wm-"]').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('wm-' + section);
+  if(el) el.classList.add('active');
+  const main = document.getElementById('worker-main');
+
+  const sections = {
+    profile: `
+      <div class="dash-header"><h2>My Profile</h2><p>Your registered details</p></div>
+      <div class="card">
+        <div class="profile-top">
+          <div class="avatar avatar-lg">RK</div>
+          <div class="profile-details">
+            <h2 style="color:var(--brand)">Ravi Kumar</h2>
+            <p style="color:var(--text2);font-size:14px">@ravi_plumber · Plumber</p>
+            <div class="stars">★★★★★ <span style="font-size:13px;color:var(--text2)">4.8 (42 reviews)</span></div>
+            <div class="profile-badge-row">
+              <span class="badge badge-gold">🥇 100+ Jobs</span>
+              <span class="badge badge-silver">🥈 5-Star Worker</span>
+              <span class="badge">✅ Aadhaar Verified</span>
+              <span class="badge">⚡ Fast Responder</span>
+            </div>
+          </div>
+        </div>
+        <hr class="section-divider"/>
+        <div class="info-grid">
+          <div class="info-item"><label>Mobile</label><p>+91 98765 43210</p></div>
+          <div class="info-item"><label>Work Type</label><p>Plumber</p></div>
+          <div class="info-item"><label>Experience</label><p>8 years</p></div>
+          <div class="info-item"><label>Daily Wage</label><p>₹650/day</p></div>
+          <div class="info-item"><label>Work Preference</label><p>Full Time & Part Time</p></div>
+          <div class="info-item"><label>Hours/Day</label><p>Up to 10 hrs</p></div>
+          <div class="info-item" style="grid-column:1/-1"><label>Address</label><p>14, Rajaji Nagar, Bengaluru – 560010</p></div>
+          <div class="info-item" style="grid-column:1/-1"><label>Bio</label><p style="line-height:1.7">Experienced plumber with 8 years in residential and commercial projects. Specialise in leak repairs, pipe installations, bathroom fittings, and water tank maintenance.</p></div>
+        </div>
+      </div>`,
+
+    pending: `
+      <div class="dash-header"><h2>Pending Works</h2><p>Today's assigned work</p></div>
+      <div class="alert-info">These are works assigned for <strong>today</strong>. Please confirm or contact the hirer.</div>
+      ${pendingCard('Pipe Repair','Sharma Constructions','+91 98765 00001','Today 9am–5pm','₹650','Full Day','12 MG Road, Bengaluru','pending')}
+      ${pendingCard('Bathroom Fitting','Gupta Residentials','+91 90001 22233','Today 10am–2pm','₹400','Part Day','88 Indiranagar, Bengaluru','pending')}`,
+
+    upcoming: `
+      <div class="dash-header"><h2>Upcoming Works</h2><p>Scheduled for future dates</p></div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h4>30 April 2025 — 2 works assigned</h4>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="goTo('work-detail')">View →</button>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><label>Work</label><p>Pipe Repair & Fitting</p></div>
+          <div class="info-item"><label>Hirer</label><p>Sharma Constructions</p></div>
+          <div class="info-item"><label>Time</label><p>9:00 AM – 5:00 PM</p></div>
+          <div class="info-item"><label>Wage</label><p style="color:var(--green)">₹650</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><h4>1 May 2025 — 1 work assigned</h4></div>
+          <button class="btn btn-ghost btn-sm" onclick="goTo('work-detail')">View →</button>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><label>Work</label><p>Water Tank Cleaning</p></div>
+          <div class="info-item"><label>Hirer</label><p>Mehta Apartments</p></div>
+          <div class="info-item"><label>Time</label><p>10:00 AM – 1:00 PM</p></div>
+          <div class="info-item"><label>Wage</label><p style="color:var(--green)">₹350</p></div>
+        </div>
+      </div>`,
+
+    completed: `
+      <div class="dash-header"><h2>Completed Works</h2><p>Your finished jobs & reviews</p></div>
+      ${completedCard('Leak Repair','Kapoor Home','₹500','★★★★★','Excellent work, very professional and clean!')}
+      ${completedCard('Pipe Installation','Reddy Apartments','₹800','★★★★☆','Good work, finished on time.')}
+      ${completedCard('Bathroom Fitting','Singh Residence','₹650','★★★★★','Best plumber in Bengaluru!')}`,
+
+    payment: `
+      <div class="dash-header"><h2>Payments</h2><p>All received payments</p></div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div><div style="font-size:12px;color:var(--text3)">Total Earned</div><div style="font-size:26px;font-weight:700;color:var(--green)">₹12,450</div></div>
+          <div><div style="font-size:12px;color:var(--text3)">This Month</div><div style="font-size:22px;font-weight:600;color:var(--brand)">₹3,200</div></div>
+        </div>
+        <hr class="section-divider"/>
+        ${paymentRow('Leak Repair – Kapoor Home','25 Apr 2025','₹500')}
+        ${paymentRow('Pipe Installation – Reddy Apartments','20 Apr 2025','₹800')}
+        ${paymentRow('Bathroom Fitting – Singh Residence','15 Apr 2025','₹650')}
+        ${paymentRow('Water Tank – Jain Bungalow','10 Apr 2025','₹350')}
+        ${paymentRow('Emergency Repair – Verma House','5 Apr 2025','₹900')}
+      </div>`,
+
+    reviews: `
+      <div class="dash-header"><h2>My Reviews</h2><p>Verified reviews from customers</p></div>
+      <div class="alert-info">Reviews are verified — only actual paying customers who scanned the QR code can leave reviews.</div>
+      ${reviewCard('Priya Kapoor','★★★★★','Excellent work, very professional and clean!','25 Apr 2025')}
+      ${reviewCard('Arjun Reddy','★★★★☆','Good work, finished on time.','20 Apr 2025')}
+      ${reviewCard('Meena Singh','★★★★★','Best plumber in Bengaluru! Highly recommend.','15 Apr 2025')}
+      <div class="qr-box" style="margin-top:20px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:6px">Your Verified Review QR Code</div>
+        <div class="qr-code">
+          <svg width="60" height="60" viewBox="0 0 60 60" style="fill:var(--brand)">
+            <rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="8" y="8" width="8" height="8"/>
+            <rect x="38" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="44" y="8" width="8" height="8"/>
+            <rect x="2" y="38" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="8" y="44" width="8" height="8"/>
+            <rect x="30" y="30" width="6" height="6"/><rect x="38" y="30" width="6" height="6"/>
+            <rect x="46" y="30" width="6" height="6"/><rect x="54" y="30" width="6" height="6"/>
+            <rect x="30" y="38" width="6" height="6"/><rect x="46" y="38" width="6" height="6"/>
+            <rect x="30" y="46" width="6" height="6"/><rect x="38" y="46" width="6" height="6"/>
+            <rect x="54" y="46" width="6" height="6"/><rect x="30" y="54" width="6" height="6"/>
+            <rect x="46" y="54" width="6" height="6"/>
+          </svg>
+        </div>
+        <div style="font-size:12px;opacity:.8">Customers scan this after payment to leave a verified review</div>
+      </div>`
+  };
+
+  main.innerHTML = sections[section] || '';
+}
+
+function pendingCard(work,hirer,phone,time,wage,duration,address,status) {
+  return `<div class="card">
+    <div class="card-header"><h4>${work}</h4><span class="status-badge status-${status}">Pending</span></div>
+    <div class="info-grid">
+      <div class="info-item"><label>Hirer</label><p>${hirer}</p></div>
+      <div class="info-item"><label>Mobile</label><p>${phone}</p></div>
+      <div class="info-item"><label>Time</label><p>${time}</p></div>
+      <div class="info-item"><label>Wage</label><p style="color:var(--green)">${wage}</p></div>
+      <div class="info-item"><label>Duration</label><p>${duration}</p></div>
+      <div class="info-item"><label>Location</label><p>${address}</p></div>
+    </div>
+  </div>`;
+}
+
+function completedCard(work,hirer,wage,stars,review) {
+  return `<div class="card">
+    <div class="card-header"><h4>${work}</h4><span class="status-badge status-completed">Completed</span></div>
+    <div class="info-grid" style="margin-bottom:12px">
+      <div class="info-item"><label>Hirer</label><p>${hirer}</p></div>
+      <div class="info-item"><label>Wage Paid</label><p style="color:var(--green)">${wage}</p></div>
+    </div>
+    <div style="background:var(--bg);border-radius:var(--r2);padding:12px">
+      <div class="stars">${stars}</div>
+      <p style="font-size:13px;color:var(--text2);margin-top:4px;font-style:italic">"${review}"</p>
+    </div>
+  </div>`;
+}
+
+function paymentRow(label, date, amount) {
+  return `<div class="payment-row">
+    <div><p style="font-size:14px;font-weight:500">${label}</p><p style="font-size:12px;color:var(--text3)">${date}</p></div>
+    <div class="amount-positive">${amount}</div>
+  </div>`;
+}
+
+function reviewCard(name,stars,text,date) {
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div class="avatar" style="width:36px;height:36px;font-size:13px">${name.split(' ').map(n=>n[0]).join('')}</div>
+      <div>
+        <div style="font-size:14px;font-weight:500">${name}</div>
+        <div style="font-size:11px;color:var(--text3)">${date} · <span style="color:var(--green)">✅ Verified Customer</span></div>
+      </div>
+    </div>
+    <div class="stars">${stars}</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:6px;font-style:italic">"${text}"</p>
+  </div>`;
+}
+
+// ===== HIRER MENUS =====
+function hMenu(section) {
+  currentHirerMenu = section;
+  document.querySelectorAll('[id^="hm-"]').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('hm-' + section);
+  if(el) el.classList.add('active');
+  const main = document.getElementById('hirer-main');
+
+  if (section === 'profile') {
+    main.innerHTML = `
+      <div class="dash-header"><h2>My Profile</h2><p>Your hirer account details</p></div>
+      <div class="card">
+        <div class="profile-top">
+          <div class="avatar avatar-lg">SC</div>
+          <div class="profile-details">
+            <h2 style="color:var(--brand)">Sharma Constructions</h2>
+            <p style="color:var(--text2);font-size:14px">@sharma_constructions · Hirer Account</p>
+          </div>
+        </div>
+        <hr class="section-divider"/>
+        <div class="info-grid">
+          <div class="info-item"><label>Phone</label><p>+91 98765 00001</p></div>
+          <div class="info-item"><label>Member Since</label><p>January 2024</p></div>
+          <div class="info-item" style="grid-column:1/-1"><label>Address</label><p>Plot 5, Industrial Area, Bengaluru – 560058</p></div>
+        </div>
+      </div>`;
+  } else if (section === 'workers') {
+    main.innerHTML = `
+      <div class="dash-header"><h2>Find Workers</h2><p>Select the type of worker you need</p></div>
+      <div class="wtype-grid">
+        ${['⚡ Electrician','🔧 Plumber','🪚 Carpenter','📚 Tutor','🎨 Painter','🧱 Mason','🚗 Driver','👨‍🍳 Cook','🌿 Gardener','🔩 Welder','❄️ AC Technician','🛡️ Security Guard'].map(w => {
+          const [icon,...name] = w.split(' ');
+          return `<div class="wtype-card" onclick="showWorkers('${name.join(' ')}')"><div class="wt-icon">${icon}</div><p>${name.join(' ')}</p></div>`;
+        }).join('')}
+      </div>
+      <div id="workers-list" style="display:none">
+        <hr class="section-divider"/>
+        <div class="dash-header"><h2 id="workers-list-title"></h2></div>
+        <div id="workers-cards"></div>
+      </div>`;
+  } else if (section === 'hired') {
+    main.innerHTML = `
+      <div class="dash-header"><h2>My Hirings</h2><p>All workers you've hired</p></div>
+      ${hiringCard('Ravi Kumar','Plumber','Today 9am–5pm','₹650','Pending','pending')}
+      ${hiringCard('Meera Devi','Tutor','27 Apr, 3pm–5pm','₹400','Completed','completed')}
+      ${hiringCard('Suresh Babu','Electrician','30 Apr, 10am–1pm','₹500','Upcoming','upcoming')}`;
+  }
+}
+
+function hiringCard(name,type,time,wage,status,cls) {
+  return `<div class="card">
+    <div class="card-header"><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="width:36px;height:36px;font-size:13px">${name.split(' ').map(n=>n[0]).join('')}</div><div><h4>${name}</h4><p style="font-size:12px;color:var(--text2)">${type}</p></div></div><span class="status-badge status-${cls}">${status}</span></div>
+    <div class="info-grid">
+      <div class="info-item"><label>Time</label><p>${time}</p></div>
+      <div class="info-item"><label>Wage</label><p style="color:var(--green)">${wage}</p></div>
+    </div>
+  </div>`;
+}
+
+function showWorkers(type) {
+  document.getElementById('workers-list').style.display = 'block';
+  document.getElementById('workers-list-title').textContent = type + 's near you';
+  const data = [
+    {name:'Ravi Kumar',exp:'8 yrs',wage:'₹650/day',rating:'4.8',phone:'+91 98765 43210',bio:'Experienced '+type+' with 8 years in residential and commercial projects. Clean work guaranteed.',badges:['100+ Jobs','Aadhaar Verified']},
+    {name:'Suresh Babu',exp:'5 yrs',wage:'₹500/day',rating:'4.5',phone:'+91 77665 43210',bio:'Reliable '+type+', specialises in repairs and installations. Always on time.',badges:['50+ Jobs','Aadhaar Verified']},
+    {name:'Ajay Nair',exp:'3 yrs',wage:'₹400/day',rating:'4.2',phone:'+91 99887 43210',bio:'Young and skilled '+type+' with good reviews in Bengaluru.',badges:['20+ Jobs']},
+  ];
+  document.getElementById('workers-cards').innerHTML = data.map(w => `
+    <div class="worker-card" onclick="goTo('worker-detail')">
+      <div class="avatar">${w.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div class="worker-info">
+        <div class="worker-name">${w.name} <span class="stars" style="font-size:13px">★${w.rating}</span></div>
+        <div class="worker-type">${type} · ${w.exp} exp</div>
+        <div class="worker-bio">${w.bio}</div>
+        <div class="worker-meta">
+          <span>📞 ${w.phone}</span>
+          <span>💰 ${w.wage}</span>
+          ${w.badges.map(b=>`<span class="badge">${b}</span>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function hireWorker() {
+  showToast('Hire request sent! Ravi Kumar will confirm shortly.');
+  setTimeout(() => hMenu('hired'), 1500);
+}
+
+// Init
+wMenu('profile');
+hMenu('profile');
+goTo('landing');
+</script>
+</body>
+</html>
